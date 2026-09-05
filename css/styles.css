@@ -1,0 +1,165 @@
+
+* {
+  box-sizing: border-box;  /* tamanho final da caixa,
+   incluindo padding e borda. Isso evita que os produtos "estourem" a linha. */
+}
+
+header {
+  background-color: black;
+  padding: 1rem;                  /*px é fixo e não muda; rem é flexível e acompanha a */
+  h1 {                            /* configuração de tamanho de fonte de quem está acessando o site.*/
+  text-align: center;
+    color: white;
+  }
+}
+nav {
+  background-color: lightgray;
+  padding: 16px;
+
+  .menu {
+     display: flex;       /*organizar lado a lado  */ 
+    flex-wrap: nowrap;    /*não quebrar linha*/
+    align-items: center;  /*alinhamento vertical*/
+    justify-content: space-evenly;  /*alinhamento horizontal*/
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .buscar-produto {
+    padding: 6px; /*espaçamento interno*/
+    width: 200px;
+    border: 1px black solid;
+    background-color: white;
+    border-radius: 4px;
+  }
+  button {
+    padding: 6px;
+    border: 1px black solid;
+    background-color: white;
+    border-radius: 4px;
+  }
+}
+
+.banner {
+  background: green;
+  color: white;
+  text-align: center; /*alinhamento horizontal*/
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 8px;
+}
+
+.tabela-produtos {
+  width: 100%; /* largura total da tela para a tabela ocupar */
+
+  th,
+  td {
+    border: 1px black solid;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle; /*alinhamento vertical*/
+  }
+
+  th {
+    background-color: black;
+    color: white;
+  }
+
+  img {
+    width: 100px;
+  }
+
+  button {
+    padding: 6px ;
+    border: 1px black solid;
+    background-color: lightgray;
+    border-radius: 4px;
+  }
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 0 auto;
+  margin-top: 20px;
+
+  h2 {
+    text-align: center;
+  }
+
+  input,
+  textarea {
+    padding: 6px;
+    border: 1px black solid;
+    border-radius: 4px;
+  }
+  .botoes {
+    display: flex;
+    justify-content: center;
+  }
+
+  button {
+    padding: 6px;
+    border: 1px black solid;
+    background-color: lightgray;
+    border-radius: 4px;
+
+    a {
+      text-decoration: none;
+      color: black;
+    }
+  }
+}
+
+main {
+  padding: 1rem;
+
+  .sucesso-contato, .sucesso-pedido {
+    text-align: center;
+    margin-top: 20px;
+    background-color: greenyellow;
+
+    h2 {
+      color: green;
+    }
+  }
+  button {
+    padding: 6px;
+    border: 1px black solid;
+    background-color: lightgray;
+    border-radius: 4px;
+  }
+    a {
+      text-decoration: none;
+      color: black;
+    }
+}
+
+
+.carrinho-itens {
+  .item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px black solid;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    img {
+      width: 150px;
+    }
+  }
+}
+
+footer {
+  background-color: black;
+  padding: 3px;
+  p {
+    color: white;
+    text-align: center;
+  }
+}
