@@ -3,29 +3,205 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Compra Finalizada</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/styles.css" />
   </head>
-  <body>
-    <header>
-      <h1>Comércio Eletrônico - Finalização</h1>
-    </header>
-
-    <main>
-      <div class="sucesso-pedido">
-      <h2>Compra Finalizada</h2>
-      <div>
-        <p>Seu pedido de número <b>#9999</b> foi feito com sucesso!</p>
-        <p>Agora é só aguardar o produto chegar em seu endereço.</p>
-      </div>
-      <a href="produtos.html">
-        <button>Retornar à Lista de Produtos</button>
-      </a>
+  <body class="d-flex flex-column min-vh-100">
+    <header id="topo"></header>
+    <main class="container py-4 flex-grow-1">
+      <div class="text-center py-5">
+        <h2>pedido realizado com sucesso</h2>
+        <p class="lead">
+          Seu pedido de numero <b>#<span id="num-pedido"></span></b> foi
+          realizado com sucesso!
+        </p>
+        <a class="btn btn-primary" href="produtos.html"
+          >Retornar a Lista de Produtos</a
+        >
       </div>
     </main>
+    <footer id="rodape"></footer>
 
-    <footer>
-      <p>© 2026 - comércio eletrônico</p>
-    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const svg = (w, h, paths) =>
+        '<svg width="' +
+        w +
+        '" height="' +
+        h +
+        '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' +
+        paths +
+        "</svg>"; // funcao com tres parametros largura, altura e paths para criar icones svg
+
+      const ICONE = {
+        // objeto com icones svg {(),()}
+        carrinho: svg(
+          24,
+          24,
+          '<circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/>',
+        ),
+        pessoa: svg(
+          26,
+          26,
+          '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>',
+        ),
+        lixeira: svg(18, 18, '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'),
+        instagram: svg(
+          20,
+          20,
+          '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>',
+        ),
+        facebook: svg(
+          20,
+          20,
+          '<path d="M15 8h-2a2 2 0 0 0-2 2v10M8 13h6"/><circle cx="12" cy="12" r="9.5"/>',
+        ),
+        sacola: svg(
+          24,
+          24,
+          '<path d="M6 8h12l1 12H5z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+        ),
+      };
+      const PRODUTOS = [
+        //array de objetos com os produtos disponiveis na loja [{},{}] id 1 indice 0
+        {
+          id: 1,
+          nome: "Box harry potter scholastic",
+          desc: "castelo (caixa azul) - Rowling, J.K. - Rocco - Capa Mole",
+          preco: 307.51,
+          img: "img/D_NQ_NP_2X_854608-MLA113308795599_062026-F.webp",
+        },
+        {
+          id: 2,
+          nome: "O Pequeno Príncipe",
+          desc: "Com Aquarelas Do Autor",
+          preco: 19.33,
+          img: "img/D_NQ_NP_2X_709297-MLB91128453148_092025-F-o-pequeno-principe--com-aquarelas-do-autor.webp",
+        },
+        {
+          id: 3,
+          nome: "O diário de uma princesa desastrada 3",
+          desc: " Capa Mole",
+          preco: 50.84,
+          img: "img/D_NQ_NP_2X_856240-MLA112270179054_062026-F.webp",
+        },
+      ];
+
+      const qtdDe = (id) => Number(localStorage.getItem("carrinho_" + id)) || 0; //quantidade de produto que tem no carrinho se estiver vazio retorna 0
+
+      const totalItens = () =>
+        PRODUTOS.reduce((soma, p) => soma + qtdDe(p.id), 0); //constante sem parametros que usa o reduce para percorrer o array de produtos e somar a quantidade de cada produto no carrinho soma o acumulador e p produto atual
+
+      const logado = () => localStorage.getItem("logado") === "sim"; //constante sem parametros que verifica se o usuario esta logado retorna true ou false
+
+      function mostrarMenu() {
+        // montar navbar
+        const qtd = totalItens(); //pega o que ta em totalItens e coloca em qtd
+
+        let menu; //menu para que esta logado
+        if (logado()) {
+          menu =
+            '<li><a class="dropdown-item" href="meus_dados.html">Meus Dados</a></li>\n' +
+            '<li><a class="dropdown-item" href="meus_pedidos.html">Meus Pedidos</a></li>\n' +
+            '<li><a class="dropdown-item" href="#" onclick="sair()">Sair</a></li>';
+        } else {
+          // para quem nao esta logado
+          menu =
+            '<li><a class="dropdown-item" href="novo_usuario.html">Cadastrar</a></li>\n' +
+            '<li><a class="dropdown-item" href="login.html">Entrar</a></li>';
+        }
+
+        let iconeCarrinho; // mudanca de icon quando o carrinho esta vazio ou cheio
+        if (qtd > 0) {
+          iconeCarrinho = ICONE.carrinho;
+        } else {
+          iconeCarrinho = ICONE.sacola;
+        }
+
+        let badge; // montar contador do carinho com bootstrap
+        if (qtd > 0) {
+          badge =
+            '<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">' +
+            qtd +
+            "</span>";
+        } else {
+          badge = "";
+        }
+
+        document.getElementById("topo").innerHTML = // pega a div com id="topo" e vai colocar HTML dentro dela
+          '<nav class="navbar navbar-expand-lg navbar-dark bg-dark">\n' +
+          '<div class="container">\n' + // centraliza o conteúdo da navbar
+          '<span class="navbar-brand" href="index.html"><img src="img/images.png"></span>\n' + // logo do site, clicando volta pra index.html
+          '<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">\n' +
+          '<span class="navbar-toggler-icon"></span>\n' + // icone do menu hamburguer
+          "</button>\n" +
+          '<div class="collapse navbar-collapse" id="menu">\n' + // menu que vai abrir quando clicar no hamburguer
+          '<ul class="navbar-nav me-auto">\n' + // lista dos links do menu
+          '<li class="nav-item"><a class="nav-link" href="index.html">Página Inicial</a></li>\n' +
+          '<li class="nav-item"><a class="nav-link" href="produtos.html">Produtos</a></li>\n' +
+          '<li class="nav-item"><a class="nav-link" href="contato.html">Contato</a></li>\n' +
+          '<li class="nav-item"><a class="nav-link" href="carrinho.html">Carrinho</a></li>\n' +
+          "</ul>\n" + // fecha a lista de links
+          '<form class="d-flex me-3 my-2 my-lg-0" onsubmit="pesquisar(event)">\n' + // formulario de busca
+          '<input class="form-control me-2" type="search" name="busca" placeholder="Buscar produto" value="' +
+          buscaAtual() +
+          '">\n' +
+          '<button class="btn btn-outline-light" type="submit">Buscar</button>\n' +
+          "</form>\n" +
+          '<a class="text-white position-relative me-4 fs-4 text-decoration-none" href="carrinho.html">\n' + // link do ícone do carrinho
+          iconeCarrinho +
+          badge +
+          "</a>\n" + // fecha o link do carrinho
+          '<div class="dropdown">\n' +
+          // ícone de pessoa que abre o menu dropdown quando clicado
+          '<a class="text-white text-decoration-none" href="#" data-bs-toggle="dropdown">' + // abre o dropdown quando clicado
+          ICONE.pessoa +
+          "</a>\n" + // fecha o link do ícone
+          ' <ul class="dropdown-menu dropdown-menu-end">' + // itens do menu vem da variável menu
+          menu +
+          "</ul>\n" +
+          " </div>\n" +
+          "    </div>\n" +
+          "  </div>\n" +
+          "</nav>";
+      }
+
+      function sair() {
+        localStorage.removeItem("logado");
+        location.href = "index.html";
+      }
+
+      function mostrarRodape() {
+        const r = document.getElementById("rodape");
+        r.className = "bg-dark text-white text-center py-3 mt-auto";
+        r.innerHTML =
+          '<span class="mx-2">' +
+          ICONE.instagram +
+          "</span>\n" +
+          '<span class="mx-2">' +
+          ICONE.facebook +
+          "</span>\n" +
+          '<p class="mb-0 small">&copy; 2026 Comércio Eletrônico</p>';
+      }
+
+      function buscaAtual() {
+        return new URLSearchParams(location.search).get("busca") || "";
+      }
+
+      function pesquisar(e) {
+        e.preventDefault();
+        location.href =
+          "produtos.html?busca=" +
+          encodeURIComponent(e.target.busca.value.trim());
+      }
+      mostrarMenu();
+      mostrarRodape();
+      if (document.getElementById("num-pedido"))
+        document.getElementById("num-pedido").textContent =
+          localStorage.getItem("totalPedidos");
+    </script>
   </body>
 </html>

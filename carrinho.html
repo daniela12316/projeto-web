@@ -3,46 +3,320 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Carrinho de Compras</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/styles.css" />
   </head>
-  <body>
-    <header>
-      <h1>Comércio Eletrônico - Carrinho</h1>
-    </header>
+  <body class="d-flex flex-column min-vh-100">
+    <header id="topo"></header>
 
-    <main>
-      <div class="carrinho-itens">
-        <h2>Meu Carrinho de Compras</h2>
-
-        <div class="item">
-          <img
-            src="img/D_NQ_NP_2X_875850-MLA116720305573_082026-F.webp"
-            width="50%"
-          />
-          <p>Smart TV LED 43" LG 43UK6510 Ultra HD 4k</p>
-          <p>Quantidade: 1</p>
-          <p>R$ 2.049,90</p>
+    <main class="container py-4 flex-grow-1">
+      <h2>Carrinho de Compras</h2>
+      <div class="row">
+        <!--agrupar colunas-->
+        <div class="col-lg-8">
+          <!-- acupa 8 de 12-->
+          <div id="itens-carrinho"></div>
+          <a class="btn btn-outline-secondary" href="produtos.html"
+            >Retornar a Lista de Produtos</a
+          >
+          <!--se o carrinho tiver vazio ativa o alert  do mostrar produto-->
         </div>
-
-        <button class="voltar">
-          <a href="produtos.html">Retornar à Lista de Produtos</a>
-        </button>
-      </div>
-
-      <div class="resumo">
-        <h3>Resumo do Pedido</h3>
-        <p>Total (1 produto): <b>R$ 2.049,90</b></p>
-        <p>Em até 10x de R$ 204,99 sem juros</p>
-
-        <button class="finalizar">
-          <a href="sucesso-pedido.html">Finalizar compra</a>
-        </button>
+        <div class="col-lg-4 mt-4">
+          <!-- acupa 4 de 12-->
+          <div class="card-body">
+            <!-- card-body é o corpo do card-->
+            <h5 class="card-title">Resumo do Pedido</h5>
+            <p class="fs-4">Total: <b id="total"></b></p>
+            <!-- fs-4 é o tamanho da fonte-->
+            <button
+              id="btn-finalizar"
+              class="btn btn-success w-100"
+              onclick="finalizar()"
+            >
+              Finalizar pedido
+            </button>
+          </div>
+        </div>
       </div>
     </main>
 
-    <footer>
-      <p>© 2026 - comércio eletrônico</p>
-    </footer>
+    <footer id="rodape"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const svg = (w, h, paths) =>
+        '<svg width="' +
+        w +
+        '" height="' +
+        h +
+        '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' +
+        paths +
+        "</svg>"; // funcao com tres parametros largura, altura e paths para criar icones svg
+
+      const ICONE = {
+        // objeto com icones svg {(),()}
+        carrinho: svg(
+          24,
+          24,
+          '<circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H6"/>',
+        ),
+        pessoa: svg(
+          26,
+          26,
+          '<circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>',
+        ),
+        lixeira: svg(18, 18, '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'),
+        instagram: svg(
+          20,
+          20,
+          '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>',
+        ),
+        facebook: svg(
+          20,
+          20,
+          '<path d="M15 8h-2a2 2 0 0 0-2 2v10M8 13h6"/><circle cx="12" cy="12" r="9.5"/>',
+        ),
+        sacola: svg(
+          24,
+          24,
+          '<path d="M6 8h12l1 12H5z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+        ),
+      };
+      const PRODUTOS = [
+        //array de objetos com os produtos disponiveis na loja [{},{}] id 1 indice 0
+        {
+          id: 1,
+          nome: "Box harry potter scholastic",
+          desc: "castelo (caixa azul) - Rowling, J.K. - Rocco - Capa Mole",
+          preco: 307.51,
+          img: "img/D_NQ_NP_2X_854608-MLA113308795599_062026-F.webp",
+        },
+        {
+          id: 2,
+          nome: "O Pequeno Príncipe",
+          desc: "Com Aquarelas Do Autor",
+          preco: 19.33,
+          img: "img/D_NQ_NP_2X_709297-MLB91128453148_092025-F-o-pequeno-principe--com-aquarelas-do-autor.webp",
+        },
+        {
+          id: 3,
+          nome: "O diário de uma princesa desastrada 3",
+          desc: " Capa Mole",
+          preco: 50.84,
+          img: "img/D_NQ_NP_2X_856240-MLA112270179054_062026-F.webp",
+        },
+      ];
+
+      const dinheiro = (v) =>
+        v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); //formata preco para reais
+
+      const qtdDe = (id) => Number(localStorage.getItem("carrinho_" + id)) || 0; //quantidade de produto que tem no carrinho se estiver vazio retorna 0
+
+      const totalItens = () =>
+        PRODUTOS.reduce((soma, p) => soma + qtdDe(p.id), 0); //constante sem parametros que usa o reduce para percorrer o array de produtos e somar a quantidade de cada produto no carrinho soma o acumulador e p produto atual
+
+      const logado = () => localStorage.getItem("logado") === "sim"; //constante sem parametros que verifica se o usuario esta logado retorna true ou false
+
+      function mostrarMenu() {
+        // montar navbar
+        const qtd = totalItens(); //pega o que ta em totalItens e coloca em qtd
+
+        let menu; //menu para que esta logado
+        if (logado()) {
+          menu =
+            '<li><a class="dropdown-item" href="meus_dados.html">Meus Dados</a></li>\n' +
+            '<li><a class="dropdown-item" href="meus_pedidos.html">Meus Pedidos</a></li>\n' +
+            '<li><a class="dropdown-item" href="#" onclick="sair()">Sair</a></li>';
+        } else {
+          // para quem nao esta logado
+          menu =
+            '<li><a class="dropdown-item" href="novo_usuario.html">Cadastrar</a></li>\n' +
+            '<li><a class="dropdown-item" href="login.html">Entrar</a></li>';
+        }
+
+        let iconeCarrinho; // mudanca de icon quando o carrinho esta vazio ou cheio
+        if (qtd > 0) {
+          iconeCarrinho = ICONE.carrinho;
+        } else {
+          iconeCarrinho = ICONE.sacola;
+        }
+
+        let badge; // montar contador do carinho com bootstrap
+        if (qtd > 0) {
+          badge =
+            '<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">' +
+            qtd +
+            "</span>";
+        } else {
+          badge = "";
+        }
+
+        document.getElementById("topo").innerHTML = // pega a div com id="topo" e vai colocar HTML dentro dela
+          '<nav class="navbar navbar-expand-lg navbar-dark bg-dark">\n' +
+          '<div class="container">\n' + // centraliza o conteúdo da navbar
+          '<span class="navbar-brand" href="index.html"><img src="img/images.png"></span>\n' + // logo do site, clicando volta pra index.html
+          '<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">\n' +
+          '<span class="navbar-toggler-icon"></span>\n' + // icone do menu hamburguer
+          "</button>\n" +
+          '<div class="collapse navbar-collapse" id="menu">\n' + // menu que vai abrir quando clicar no hamburguer
+          '<ul class="navbar-nav me-auto">\n' + // lista dos links do menu
+          '<li class="nav-item"><a class="nav-link" href="index.html">Página Inicial</a></li>\n' +
+          '<li class="nav-item"><a class="nav-link" href="produtos.html">Produtos</a></li>\n' +
+          '<li class="nav-item"><a class="nav-link" href="contato.html">Contato</a></li>\n' +
+          '<li class="nav-item"><a class="nav-link" href="carrinho.html">Carrinho</a></li>\n' +
+          "</ul>\n" + // fecha a lista de links
+          '<form class="d-flex me-3 my-2 my-lg-0" onsubmit="pesquisar(event)">\n' + // formulario de busca
+          '<input class="form-control me-2" type="search" name="busca" placeholder="Buscar produto" value="' +
+          buscaAtual() +
+          '">\n' +
+          '<button class="btn btn-outline-light" type="submit">Buscar</button>\n' +
+          "</form>\n" +
+          '<a class="text-white position-relative me-4 fs-4 text-decoration-none" href="carrinho.html">\n' + // link do ícone do carrinho
+          iconeCarrinho +
+          badge +
+          "</a>\n" + // fecha o link do carrinho
+          '<div class="dropdown">\n' +
+          // ícone de pessoa que abre o menu dropdown quando clicado
+          '<a class="text-white text-decoration-none" href="#" data-bs-toggle="dropdown">' + // abre o dropdown quando clicado
+          ICONE.pessoa +
+          "</a>\n" + // fecha o link do ícone
+          ' <ul class="dropdown-menu dropdown-menu-end">' + // itens do menu vem da variável menu
+          menu +
+          "</ul>\n" +
+          " </div>\n" +
+          "    </div>\n" +
+          "  </div>\n" +
+          "</nav>";
+      }
+
+      function sair() {
+        localStorage.removeItem("logado");
+        location.href = "index.html";
+      }
+
+      function mostrarRodape() {
+        const r = document.getElementById("rodape");
+        r.className = "bg-dark text-white text-center py-3 mt-auto";
+        r.innerHTML =
+          '<span class="mx-2">' +
+          ICONE.instagram +
+          "</span>\n" +
+          '<span class="mx-2">' +
+          ICONE.facebook +
+          "</span>\n" +
+          '<p class="mb-0 small">&copy; 2026 Comércio Eletrônico</p>';
+      }
+
+      function buscaAtual() {
+        return new URLSearchParams(location.search).get("busca") || "";
+      }
+
+      function pesquisar(e) {
+        e.preventDefault();
+        location.href =
+          "produtos.html?busca=" +
+          encodeURIComponent(e.target.busca.value.trim());
+      }
+
+      function mudarQtd(id, delta) {
+        const nova = qtdDe(id) + delta;
+        if (nova <= 0) localStorage.removeItem("carrinho_" + id);
+        else localStorage.setItem("carrinho_" + id, nova);
+        mostrarMenu();
+        mostrarCarrinho();
+      }
+
+      function mostrarCarrinho() {
+        const noCarrinho = PRODUTOS.filter(function (p) {
+          return qtdDe(p.id) > 0;
+        });
+
+        let total = 0;
+
+        let html = "";
+        if (noCarrinho.length) {
+          html = noCarrinho
+            .map(function (p) {
+              const qtd = qtdDe(p.id); // quantidade daquele produto
+              const sub = p.preco * qtd; // subtotal
+              total += sub; //  total geral
+
+              return (
+                '<div class="card mb-3">\n' +
+                '<div class="row g-0 align-items-center">\n' +
+                '<div class="col-3">\n' +
+                '<img src="' +
+                p.img +
+                '" class="img-fluid rounded-start" alt="">\n' +
+                "</div>\n" +
+                '<div class="col-9">\n' + //card
+                '<div class="card-body">\n' +
+                '<h5 class="card-title">' +
+                p.nome +
+                "</h5>\n" +
+                '<p class="mb-2">' +
+                dinheiro(p.preco) +
+                " x " +
+                qtd +
+                " = <b>" +
+                dinheiro(sub) +
+                "</b></p>\n" +
+                '<button class="btn btn-sm btn-outline-secondary" onclick="mudarQtd(' +
+                p.id +
+                ', -1)">-</button>\n' + // botao de diminuir
+                '<span class="mx-2">' +
+                qtd +
+                "</span>\n" +
+                '<button class="btn btn-sm btn-outline-secondary" onclick="mudarQtd(' +
+                p.id +
+                ', 1)">+</button>\n' + // botao de aumentar
+                '<button class="btn btn-sm btn-outline-danger ms-3" onclick="mudarQtd(' +
+                p.id +
+                ', -999)">' +
+                ICONE.lixeira +
+                "</button>\n" + // botao de lixeira
+                "</div>\n" +
+                "</div>\n" +
+                "</div>\n" +
+                "</div>"
+              );
+            })
+            .join("");
+        } else {
+          html = '<div class="alert alert-info">Seu carrinho esta vazio.</div>';
+        }
+
+        document.getElementById("itens-carrinho").innerHTML = html;
+
+        document.getElementById("total").textContent = dinheiro(total); // atualiza o total
+
+        document.getElementById("parcela").textContent = dinheiro(total / 10); // atualiza a parcela
+
+        document.getElementById("btn-finalizar").disabled = !noCarrinho.length; // desabilita o botão finalizar se não houver itens no carrinho
+      }
+
+      function finalizar() {
+        if (!totalItens()) return;
+        const total = PRODUTOS.reduce(
+          (soma, p) => soma + p.preco * qtdDe(p.id),
+          0,
+        );
+        const n = (Number(localStorage.getItem("totalPedidos")) || 0) + 1;
+        localStorage.setItem(
+          "pedido_" + n,
+          new Date().toLocaleDateString("pt-BR") + "|" + total,
+        );
+        localStorage.setItem("totalPedidos", n);
+        PRODUTOS.forEach((p) => localStorage.removeItem("carrinho_" + p.id));
+        location.href = "sucesso-pedido.html";
+      }
+
+      mostrarMenu();
+      mostrarRodape();
+      if (document.getElementById("itens-carrinho")) mostrarCarrinho();
+    </script>
   </body>
 </html>
